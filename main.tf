@@ -16,7 +16,7 @@ data "aws_acm_certificate" "main" {
 }
 
 data "template_file" "bucket_policy" {
-  template = "${file("../../../iam/policy_templates/hosting-bucket-policy.tpl")}"
+  template = "${file("./hosting-bucket-policy.tpl")}"
   vars = {
     originAccessIdentityArn = aws_cloudfront_origin_access_identity.origin_access_identity.iam_arn
     bucketName = local.dub_domain
