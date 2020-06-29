@@ -76,7 +76,7 @@ resource "aws_cloudfront_distribution" "website_cdn" {
   enabled      = true
   price_class  = "PriceClass_All"
   http_version = "http2"
-  aliases = ["${local.dub_domain}"]
+  aliases = [local.dub_domain, var.domain]
 
   origin {
     origin_id   = "origin-bucket-${aws_s3_bucket.site_bucket.id}"
@@ -136,6 +136,28 @@ resource "aws_route53_record" "www_cdn_A_record" {
 resource "aws_route53_record" "www_cdn_AAAA_record" {
   zone_id = var.route53_zone_id == null ? data.aws_route53_zone.main[0].id : var.route53_zone_id
   name = local.dub_domain
+  type = "AAAA"
+  alias {
+    name = aws_cloudfront_distribution.website_cdn.domain_name
+    zone_id  = aws_cloudfront_distribution.website_cdn.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "cdn_A_record_no_dubs" {
+  zone_id = var.route53_zone_id == null ? data.aws_route53_zone.main[0].id : var.route53_zone_id
+  name = var.domain
+  type = "A"
+  alias {
+    name = aws_cloudfront_distribution.website_cdn.domain_name
+    zone_id  = aws_cloudfront_distribution.website_cdn.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "cdn_AAAA_record_no_dubs" {
+  zone_id = var.route53_zone_id == null ? data.aws_route53_zone.main[0].id : var.route53_zone_id
+  name = var.domain
   type = "AAAA"
   alias {
     name = aws_cloudfront_distribution.website_cdn.domain_name

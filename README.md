@@ -7,7 +7,7 @@ Inputs:
 ```
 module "prod_site" {
   source = ...
-  domain = "" // required (should not include "www."
+  domain = "" // required (should not include "www.")
   route53_zone_id = "" optional (if not provided, it looks for zone named after your input domain)
   site_bucket_policy = "" // optional. Default policy only allows Cloudfront Origin Identity access.
   log_bucket_policy = "" // optional. Default is none.
@@ -22,7 +22,7 @@ This module will spin up an s3 hosting bucket and an accompanying log bucket as 
 Example usage (assuming you bought your domain using Route53, so the hosted zone exists).:
 
 ```
-acm.tf (already deployed):
+acm.tf (should already be deployed):
 
 provider "aws" {
   region = "us-east-1"
@@ -41,6 +41,7 @@ provider "aws" {
 }
 
 module "example_site" {
+  depends_on = [ aws_acm_certificate.example_cert] // Depends on is untested here. If this doesn't work, just deploy the acm before adding this.
   source = ...
   domain = "example.com"
 }
